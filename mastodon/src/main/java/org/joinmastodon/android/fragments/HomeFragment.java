@@ -2,13 +2,9 @@ package org.joinmastodon.android.fragments;
 
 import android.app.Fragment;
 import android.app.NotificationManager;
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Outline;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,38 +14,30 @@ import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import org.joinmastodon.android.MainActivity;
-import org.joinmastodon.android.MastodonApp;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+
 import org.joinmastodon.android.PushNotificationReceiver;
 import org.joinmastodon.android.R;
-import org.joinmastodon.android.api.requests.oauth.RevokeOauthToken;
 import org.joinmastodon.android.api.session.AccountSession;
 import org.joinmastodon.android.api.session.AccountSessionManager;
 import org.joinmastodon.android.fragments.discover.DiscoverFragment;
-import org.joinmastodon.android.fragments.discover.SearchFragment;
 import org.joinmastodon.android.model.Account;
 import org.joinmastodon.android.ui.AccountSwitcherSheet;
-import org.joinmastodon.android.ui.M3AlertDialogBuilder;
 import org.joinmastodon.android.ui.utils.UiUtils;
 import org.joinmastodon.android.ui.views.TabBar;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import me.grishka.appkit.FragmentStackActivity;
-import me.grishka.appkit.Nav;
-import me.grishka.appkit.api.ErrorResponse;
 import me.grishka.appkit.fragments.AppKitFragment;
 import me.grishka.appkit.fragments.LoaderFragment;
 import me.grishka.appkit.fragments.OnBackPressedListener;
 import me.grishka.appkit.imageloader.ViewImageLoader;
 import me.grishka.appkit.imageloader.requests.UrlImageLoaderRequest;
 import me.grishka.appkit.utils.V;
-import me.grishka.appkit.views.BottomSheet;
 import me.grishka.appkit.views.FragmentRootLinearLayout;
 
 public class HomeFragment extends AppKitFragment implements OnBackPressedListener{
@@ -81,8 +69,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			args.putString("account", accountID);
 			homeTimelineFragment=new HomeTimelineFragment();
 			homeTimelineFragment.setArguments(args);
-			args=new Bundle();
-			args.putString("account", accountID);
+			args=new Bundle(args);
 			publicTimelineFragment=new PublicTimelineFragment();
 			publicTimelineFragment.setArguments(args);
 			args=new Bundle(args);
@@ -129,7 +116,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		if(savedInstanceState==null){
 			getChildFragmentManager().beginTransaction()
 					.add(R.id.fragment_wrap, homeTimelineFragment)
-					.add(R.id.fragment_wrap, publicTimelineFragment)
+					.add(R.id.fragment_wrap, publicTimelineFragment).hide(publicTimelineFragment)
 					.add(R.id.fragment_wrap, searchFragment).hide(searchFragment)
 					.add(R.id.fragment_wrap, notificationsFragment).hide(notificationsFragment)
 					.add(R.id.fragment_wrap, profileFragment).hide(profileFragment)
@@ -159,6 +146,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		if(savedInstanceState==null || homeTimelineFragment!=null)
 			return;
 		homeTimelineFragment=(HomeTimelineFragment) getChildFragmentManager().getFragment(savedInstanceState, "homeTimelineFragment");
+		publicTimelineFragment=(PublicTimelineFragment) getChildFragmentManager().getFragment(savedInstanceState, "publicTimelineFragment");
 		searchFragment=(DiscoverFragment) getChildFragmentManager().getFragment(savedInstanceState, "searchFragment");
 		notificationsFragment=(NotificationsFragment) getChildFragmentManager().getFragment(savedInstanceState, "notificationsFragment");
 		profileFragment=(ProfileFragment) getChildFragmentManager().getFragment(savedInstanceState, "profileFragment");
@@ -166,6 +154,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		Fragment current=fragmentForTab(currentTab);
 		getChildFragmentManager().beginTransaction()
 				.hide(homeTimelineFragment)
+				.hide(publicTimelineFragment)
 				.hide(searchFragment)
 				.hide(notificationsFragment)
 				.hide(profileFragment)
@@ -210,6 +199,8 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 	private Fragment fragmentForTab(@IdRes int tab){
 		if(tab==R.id.tab_home){
 			return homeTimelineFragment;
+		}else if(tab==R.id.tab_public){
+			return publicTimelineFragment;
 		}else if(tab==R.id.tab_search){
 			return searchFragment;
 		}else if(tab==R.id.tab_notifications){
