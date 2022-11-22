@@ -13,6 +13,7 @@ import org.joinmastodon.android.BuildConfig;
 import org.joinmastodon.android.MastodonApp;
 import org.joinmastodon.android.api.requests.notifications.GetNotifications;
 import org.joinmastodon.android.api.requests.timelines.GetHomeTimeline;
+import org.joinmastodon.android.api.requests.timelines.GetPublicTimeline;
 import org.joinmastodon.android.api.session.AccountSessionManager;
 import org.joinmastodon.android.model.CacheablePaginatedResponse;
 import org.joinmastodon.android.model.Filter;
@@ -122,6 +123,79 @@ public class CacheController{
 					flags|=POST_FLAG_GAP_AFTER;
 				values.put("flags", flags);
 				db.insertWithOnConflict("home_timeline", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			}
+		});
+	}
+
+	public void getPublicTimeline(String maxID, int count, boolean forceReload, Callback<CacheablePaginatedResponse<List<Status>>> callback){
+		cancelDelayedClose();
+		databaseThread.postRunnable(()->{
+			try{
+				List<Filter> filters=AccountSessionManager.getInstance().getAccount(accountID).wordFilters.stream().filter(f->f.context.contains(Filter.FilterContext.HOME)).collect(Collectors.toList());
+				if(!forceReload){
+					SQLiteDatabase db=getOrOpenDatabase();
+					try(Cursor cursor=db.query("public_timeline", new String[]{"json", "flags"}, maxID==null ? null : "`id`<?", maxID==null ? null : new String[]{maxID}, null, null, "`id` DESC", count+"")){
+						if(cursor.getCount()==count){
+							ArrayList<Status> result=new ArrayList<>();
+							cursor.moveToFirst();
+							String newMaxID;
+							outer:
+							do{
+								Status status=MastodonAPIController.gson.fromJson(cursor.getString(0), Status.class);
+								status.postprocess();
+								int flags=cursor.getInt(1);
+								status.hasGapAfter=((flags & POST_FLAG_GAP_AFTER)!=0);
+								newMaxID=status.id;
+								for(Filter filter:filters){
+									if(filter.matches(status.getContentStatus().content))
+										continue outer;
+								}
+								result.add(status);
+							}while(cursor.moveToNext());
+							String _newMaxID=newMaxID;
+							uiHandler.post(()->callback.onSuccess(new CacheablePaginatedResponse<>(result, _newMaxID, true)));
+							return;
+						}
+					}catch(IOException x){
+						Log.w(TAG, "getPublicTimeline: corrupted status object in database", x);
+					}
+				}
+				new GetPublicTimeline(false, false, maxID, null, count)
+						.setCallback(new Callback<>(){
+							@Override
+							public void onSuccess(List<Status> result){
+								callback.onSuccess(new CacheablePaginatedResponse<>(result.stream().filter(new StatusFilterPredicate(filters)).collect(Collectors.toList()), result.isEmpty() ? null : result.get(result.size()-1).id, false));
+								putPublicTimeline(result, maxID==null);
+							}
+
+							@Override
+							public void onError(ErrorResponse error){
+								callback.onError(error);
+							}
+						})
+						.exec(accountID);
+			}catch(SQLiteException x){
+				Log.w(TAG, x);
+				uiHandler.post(()->callback.onError(new MastodonErrorResponse(x.getLocalizedMessage(), 500)));
+			}finally{
+				closeDelayed();
+			}
+		}, 0);
+	}
+
+	public void putPublicTimeline(List<Status> posts, boolean clear){
+		runOnDbThread((db)->{
+			if(clear)
+				db.delete("public_timeline", null, null);
+			ContentValues values=new ContentValues(3);
+			for(Status s:posts){
+				values.put("id", s.id);
+				values.put("json", MastodonAPIController.gson.toJson(s));
+				int flags=0;
+				if(s.hasGapAfter)
+					flags|=POST_FLAG_GAP_AFTER;
+				values.put("flags", flags);
+				db.insertWithOnConflict("public_timeline", null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			}
 		});
 	}
@@ -236,6 +310,7 @@ public class CacheController{
 	public void deleteStatus(String id){
 		runOnDbThread((db)->{
 			db.delete("home_timeline", "`id`=?", new String[]{id});
+			db.delete("public_timeline", "`id`=?", new String[]{id});
 		});
 	}
 
@@ -298,6 +373,12 @@ public class CacheController{
 		public void onCreate(SQLiteDatabase db){
 			db.execSQL("""
 						CREATE TABLE `home_timeline` (
+							`id` VARCHAR(25) NOT NULL PRIMARY KEY,
+							`json` TEXT NOT NULL,
+							`flags` INTEGER NOT NULL DEFAULT 0
+						)""");
+			db.execSQL("""
+						CREATE TABLE `public_timeline` (
 							`id` VARCHAR(25) NOT NULL PRIMARY KEY,
 							`json` TEXT NOT NULL,
 							`flags` INTEGER NOT NULL DEFAULT 0

@@ -55,6 +55,7 @@ import me.grishka.appkit.views.FragmentRootLinearLayout;
 public class HomeFragment extends AppKitFragment implements OnBackPressedListener{
 	private FragmentRootLinearLayout content;
 	private HomeTimelineFragment homeTimelineFragment;
+	private PublicTimelineFragment publicTimelineFragment;
 	private NotificationsFragment notificationsFragment;
 	private DiscoverFragment searchFragment;
 	private ProfileFragment profileFragment;
@@ -80,6 +81,10 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			args.putString("account", accountID);
 			homeTimelineFragment=new HomeTimelineFragment();
 			homeTimelineFragment.setArguments(args);
+			args=new Bundle();
+			args.putString("account", accountID);
+			publicTimelineFragment=new PublicTimelineFragment();
+			publicTimelineFragment.setArguments(args);
 			args=new Bundle(args);
 			args.putBoolean("noAutoLoad", true);
 			searchFragment=new DiscoverFragment();
@@ -124,6 +129,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		if(savedInstanceState==null){
 			getChildFragmentManager().beginTransaction()
 					.add(R.id.fragment_wrap, homeTimelineFragment)
+					.add(R.id.fragment_wrap, publicTimelineFragment)
 					.add(R.id.fragment_wrap, searchFragment).hide(searchFragment)
 					.add(R.id.fragment_wrap, notificationsFragment).hide(notificationsFragment)
 					.add(R.id.fragment_wrap, profileFragment).hide(profileFragment)
@@ -195,6 +201,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		}
 		WindowInsets topOnlyInsets=insets.replaceSystemWindowInsets(0, insets.getSystemWindowInsetTop(), 0, 0);
 		homeTimelineFragment.onApplyWindowInsets(topOnlyInsets);
+		publicTimelineFragment.onApplyWindowInsets(topOnlyInsets);
 		searchFragment.onApplyWindowInsets(topOnlyInsets);
 		notificationsFragment.onApplyWindowInsets(topOnlyInsets);
 		profileFragment.onApplyWindowInsets(topOnlyInsets);
@@ -266,6 +273,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		super.onSaveInstanceState(outState);
 		outState.putInt("selectedTab", currentTab);
 		getChildFragmentManager().putFragment(outState, "homeTimelineFragment", homeTimelineFragment);
+		getChildFragmentManager().putFragment(outState, "publicTimelineFragment", publicTimelineFragment);
 		getChildFragmentManager().putFragment(outState, "searchFragment", searchFragment);
 		getChildFragmentManager().putFragment(outState, "notificationsFragment", notificationsFragment);
 		getChildFragmentManager().putFragment(outState, "profileFragment", profileFragment);
