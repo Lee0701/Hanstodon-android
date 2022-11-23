@@ -127,7 +127,7 @@ public class TimelineSwitcherSheet extends BottomSheet{
 	}
 
 	public enum TimelineType {
-		HOME("Home", R.drawable.ic_baseline_home_24),
+		HOME("Home", R.drawable.ic_fluent_home_28_filled),
 		PUBLIC("Public", R.drawable.ic_baseline_public_24);
 		private final String name;
 		@DrawableRes private final int icon;
