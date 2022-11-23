@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -127,16 +128,16 @@ public class TimelineSwitcherSheet extends BottomSheet{
 	}
 
 	public enum TimelineType {
-		HOME("Home", R.drawable.ic_fluent_home_28_filled),
-		PUBLIC("Public", R.drawable.ic_baseline_public_24);
-		private final String name;
+		HOME(R.string.home_timeline, R.drawable.ic_fluent_home_28_filled),
+		PUBLIC(R.string.public_timeline, R.drawable.ic_baseline_public_24);
+		@StringRes private final int name;
 		@DrawableRes private final int icon;
-		TimelineType(String name, @DrawableRes int icon) {
+		TimelineType(@StringRes int name, @DrawableRes int icon) {
 			this.name = name;
 			this.icon = icon;
 		}
 
-		public String getName() {
+		public int getName() {
 			return name;
 		}
 
