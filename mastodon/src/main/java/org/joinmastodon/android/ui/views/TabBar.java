@@ -64,4 +64,11 @@ public class TabBar extends LinearLayout{
 		selectedTabID=id;
 		findViewById(selectedTabID).setSelected(true);
 	}
+
+	public void clearSelected() {
+		for(int i = 0 ; i < getChildCount() ; i++) {
+			View child = getChildAt(i);
+			child.setSelected(false);
+		}
+	}
 }

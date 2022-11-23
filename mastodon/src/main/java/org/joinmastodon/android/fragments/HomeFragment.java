@@ -213,11 +213,6 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		throw new IllegalArgumentException();
 	}
 
-	private Fragment fragmentForTimelineType(TimelineSwitcherSheet.TimelineType type) {
-		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) return publicTimelineFragment;
-		else return homeTimelineFragment;
-	}
-
 	private void onTabSelected(@IdRes int tab){
 		Fragment newFragment= fragmentFor(tab, currentTimeline);
 		if(tab==currentTab){
@@ -255,10 +250,16 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		} else {
 			fragment = homeTimelineFragment;
 		}
+		tabBar.clearSelected();
+		tabBar.selectTab(R.id.tab_timeline);
 		switchFragment(fragment);
 		currentTab=R.id.tab_timeline;
 		ImageView homeIcon = (ImageView) tabBar.findViewById(R.id.tab_home_ico);
-		homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
+		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) {
+			homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
+		} else {
+			homeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_fluent_home_28_filled, getActivity().getTheme()));
+		}
 		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
 	}
 
