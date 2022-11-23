@@ -227,7 +227,11 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		}
 		switchFragment(newFragment);
 		currentTab=tab;
-		if(currentTab != R.id.tab_timeline) currentTimeline = null;
+		if(currentTab != R.id.tab_timeline) {
+			currentTimeline = null;
+			ImageView homeIcon = (ImageView) tabBar.findViewById(R.id.tab_home_ico);
+			homeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_fluent_home_28_selector, getActivity().getTheme()));
+		}
 		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
 	}
 
@@ -253,6 +257,8 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		}
 		switchFragment(fragment);
 		currentTab=R.id.tab_timeline;
+		ImageView homeIcon = (ImageView) tabBar.findViewById(R.id.tab_home_ico);
+		homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
 		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
 	}
 

@@ -17,17 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.joinmastodon.android.R;
-import org.joinmastodon.android.api.requests.oauth.RevokeOauthToken;
-import org.joinmastodon.android.api.session.AccountSession;
-import org.joinmastodon.android.api.session.AccountSessionManager;
 import org.joinmastodon.android.ui.utils.UiUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.grishka.appkit.api.Callback;
-import me.grishka.appkit.api.ErrorResponse;
 import me.grishka.appkit.utils.BindableViewHolder;
 import me.grishka.appkit.utils.MergeRecyclerAdapter;
 import me.grishka.appkit.utils.SingleViewRecyclerAdapter;
@@ -56,7 +51,7 @@ public class TimelineSwitcherSheet extends BottomSheet{
 		View handle=new View(activity);
 		handle.setBackgroundResource(R.drawable.bg_bottom_sheet_handle);
 		adapter.addAdapter(new SingleViewRecyclerAdapter(handle));
-		adapter.addAdapter(new TimelinesAdapter(listener));
+		adapter.addAdapter(new TimelinesAdapter());
 
 		list.setAdapter(adapter);
 		DividerItemDecoration divider=new DividerItemDecoration(activity, R.attr.colorPollVoted, .5f, 72, 16, DividerItemDecoration.NOT_FIRST);
@@ -68,38 +63,6 @@ public class TimelineSwitcherSheet extends BottomSheet{
 		content.addView(list);
 		setContentView(content);
 		setNavigationBarBackground(new ColorDrawable(UiUtils.getThemeColor(activity, R.attr.colorWindowBackground)), !UiUtils.isDarkTheme());
-	}
-
-	private void confirmLogOut(String accountID){
-		new M3AlertDialogBuilder(activity)
-				.setTitle(R.string.log_out)
-				.setMessage(R.string.confirm_log_out)
-				.setPositiveButton(R.string.log_out, (dialog, which) -> logOut(accountID))
-				.setNegativeButton(R.string.cancel, null)
-				.show();
-	}
-
-	private void logOut(String accountID){
-		AccountSession session=AccountSessionManager.getInstance().getAccount(accountID);
-		new RevokeOauthToken(session.app.clientId, session.app.clientSecret, session.token.accessToken)
-				.setCallback(new Callback<>(){
-					@Override
-					public void onSuccess(Object result){
-						onLoggedOut(accountID);
-					}
-
-					@Override
-					public void onError(ErrorResponse error){
-						onLoggedOut(accountID);
-					}
-				})
-				.wrapProgress(activity, R.string.loading, false)
-				.exec(accountID);
-	}
-
-	private void onLoggedOut(String accountID){
-		AccountSessionManager.getInstance().removeAccount(accountID);
-		dismiss();
 	}
 
 	@Override
@@ -118,16 +81,11 @@ public class TimelineSwitcherSheet extends BottomSheet{
 	}
 
 	private class TimelinesAdapter extends RecyclerView.Adapter<TimelineTypeViewHolder> {
-		private TimelineSwitcherListener listener;
-
-		public TimelinesAdapter(TimelineSwitcherListener listener) {
-			this.listener = listener;
-		}
 
 		@NonNull
 		@Override
 		public TimelineTypeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
-			return new TimelineTypeViewHolder(listener);
+			return new TimelineTypeViewHolder();
 		}
 
 		@Override
@@ -145,7 +103,7 @@ public class TimelineSwitcherSheet extends BottomSheet{
 		private final TextView name;
 		private final ImageView icon;
 
-		public TimelineTypeViewHolder(TimelineSwitcherListener listener){
+		public TimelineTypeViewHolder(){
 			super(activity, R.layout.item_timeline_switcher, list);
 			name=findViewById(R.id.name);
 			icon =findViewById(R.id.avatar);
@@ -171,11 +129,19 @@ public class TimelineSwitcherSheet extends BottomSheet{
 	public enum TimelineType {
 		HOME("Home", R.drawable.ic_baseline_home_24),
 		PUBLIC("Public", R.drawable.ic_baseline_public_24);
-		private String name;
-		@DrawableRes private int icon;
+		private final String name;
+		@DrawableRes private final int icon;
 		TimelineType(String name, @DrawableRes int icon) {
 			this.name = name;
 			this.icon = icon;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getIcon() {
+			return icon;
 		}
 	}
 
