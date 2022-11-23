@@ -25,6 +25,7 @@ import org.joinmastodon.android.api.session.AccountSessionManager;
 import org.joinmastodon.android.fragments.discover.DiscoverFragment;
 import org.joinmastodon.android.model.Account;
 import org.joinmastodon.android.ui.AccountSwitcherSheet;
+import org.joinmastodon.android.ui.TimelineSwitcherSheet;
 import org.joinmastodon.android.ui.utils.UiUtils;
 import org.joinmastodon.android.ui.views.TabBar;
 import org.parceler.Parcels;
@@ -51,7 +52,8 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 	private View tabBarWrap;
 	private ImageView tabBarAvatar;
 	@IdRes
-	private int currentTab=R.id.tab_home;
+	private int currentTab=R.id.tab_timeline;
+	private TimelineSwitcherSheet.TimelineType currentTimeline = TimelineSwitcherSheet.TimelineType.HOME;
 
 	private String accountID;
 
@@ -83,6 +85,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			args.putBoolean("noAutoLoad", true);
 			profileFragment=new ProfileFragment();
 			profileFragment.setArguments(args);
+
 		}
 
 	}
@@ -151,7 +154,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		notificationsFragment=(NotificationsFragment) getChildFragmentManager().getFragment(savedInstanceState, "notificationsFragment");
 		profileFragment=(ProfileFragment) getChildFragmentManager().getFragment(savedInstanceState, "profileFragment");
 		currentTab=savedInstanceState.getInt("selectedTab");
-		Fragment current=fragmentForTab(currentTab);
+		Fragment current= fragmentFor(currentTab, currentTimeline);
 		getChildFragmentManager().beginTransaction()
 				.hide(homeTimelineFragment)
 				.hide(publicTimelineFragment)
@@ -166,7 +169,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 	@Override
 	public void onHiddenChanged(boolean hidden){
 		super.onHiddenChanged(hidden);
-		fragmentForTab(currentTab).onHiddenChanged(hidden);
+		fragmentFor(currentTab, currentTimeline).onHiddenChanged(hidden);
 	}
 
 	@Override
@@ -196,11 +199,10 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		profileFragment.onApplyWindowInsets(topOnlyInsets);
 	}
 
-	private Fragment fragmentForTab(@IdRes int tab){
-		if(tab==R.id.tab_home){
-			return homeTimelineFragment;
-		}else if(tab==R.id.tab_public){
-			return publicTimelineFragment;
+	private Fragment fragmentFor(@IdRes int tab, TimelineSwitcherSheet.TimelineType type){
+		if(tab==R.id.tab_timeline){
+			if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) return publicTimelineFragment;
+			else return homeTimelineFragment;
 		}else if(tab==R.id.tab_search){
 			return searchFragment;
 		}else if(tab==R.id.tab_notifications){
@@ -211,16 +213,46 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		throw new IllegalArgumentException();
 	}
 
+	private Fragment fragmentForTimelineType(TimelineSwitcherSheet.TimelineType type) {
+		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) return publicTimelineFragment;
+		else return homeTimelineFragment;
+	}
+
 	private void onTabSelected(@IdRes int tab){
-		Fragment newFragment=fragmentForTab(tab);
+		Fragment newFragment= fragmentFor(tab, currentTimeline);
 		if(tab==currentTab){
 			if(newFragment instanceof ScrollableToTop scrollable)
 				scrollable.scrollToTop();
 			return;
 		}
-		getChildFragmentManager().beginTransaction().hide(fragmentForTab(currentTab)).show(newFragment).commit();
-		maybeTriggerLoading(newFragment);
+		switchFragment(newFragment);
 		currentTab=tab;
+		if(currentTab != R.id.tab_timeline) currentTimeline = null;
+		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
+	}
+
+	private void switchFragment(Fragment newFragment) {
+		getChildFragmentManager().beginTransaction()
+				.hide(homeTimelineFragment)
+				.hide(publicTimelineFragment)
+				.hide(searchFragment)
+				.hide(notificationsFragment)
+				.hide(profileFragment)
+				.show(newFragment)
+				.commit();
+		maybeTriggerLoading(newFragment);
+	}
+
+	private void onTimelineSelected(TimelineSwitcherSheet.TimelineType type){
+		currentTimeline = type;
+		Fragment fragment;
+		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) {
+			fragment = publicTimelineFragment;
+		} else {
+			fragment = homeTimelineFragment;
+		}
+		switchFragment(fragment);
+		currentTab=R.id.tab_timeline;
 		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
 	}
 
@@ -239,7 +271,9 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 	}
 
 	private boolean onTabLongClick(@IdRes int tab){
-		if(tab==R.id.tab_profile){
+		if(tab == R.id.tab_timeline) {
+			new TimelineSwitcherSheet(getActivity(), this::onTimelineSelected).show();
+		} if(tab==R.id.tab_profile){
 			ArrayList<String> options=new ArrayList<>();
 			for(AccountSession session:AccountSessionManager.getInstance().getLoggedInAccounts()){
 				options.add(session.self.displayName+"\n("+session.self.username+"@"+session.domain+")");
@@ -269,4 +303,5 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		getChildFragmentManager().putFragment(outState, "notificationsFragment", notificationsFragment);
 		getChildFragmentManager().putFragment(outState, "profileFragment", profileFragment);
 	}
+
 }

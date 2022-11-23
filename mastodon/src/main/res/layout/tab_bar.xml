@@ -14,30 +14,29 @@
 		android:layout_height="52dp"
 		android:paddingLeft="16dp"
 		android:paddingRight="16dp">
-		<ImageView
-			android:id="@+id/tab_home"
+
+		<FrameLayout
+			android:id="@+id/tab_timeline"
 			android:layout_width="60dp"
 			android:layout_height="52dp"
-			android:scaleType="center"
 			android:contentDescription="@string/home_timeline"
-			android:background="?android:selectableItemBackgroundBorderless"
-			android:tint="?android:colorPrimary"
-			android:src="@drawable/ic_fluent_home_28_selector"/>
+			android:background="?android:selectableItemBackgroundBorderless">
 
-		<Space
-			android:layout_width="0px"
-			android:layout_height="1px"
-			android:layout_weight="1"/>
-
-		<ImageView
-			android:id="@+id/tab_public"
-			android:layout_width="60dp"
-			android:layout_height="52dp"
-			android:scaleType="center"
-			android:contentDescription="@string/public_timeline"
-			android:background="?android:selectableItemBackgroundBorderless"
-			android:tint="?android:colorPrimary"
-			android:src="@drawable/ic_fluent_public_28_selector" />
+			<ImageView
+				android:id="@+id/tab_home_ico"
+				android:layout_width="28dp"
+				android:layout_height="28dp"
+				android:layout_gravity="center"
+				android:scaleType="centerCrop"
+				android:src="@drawable/ic_fluent_home_28_selector"/>
+			<View
+				android:layout_width="16dp"
+				android:layout_height="16dp"
+				android:layout_gravity="end|center_vertical"
+				android:layout_marginEnd="-4dp"
+				android:backgroundTint="?android:colorPrimary"
+				android:background="@drawable/ic_fluent_chevron_up_down_16_regular"/>
+		</FrameLayout>
 
 		<Space
 			android:layout_width="0px"

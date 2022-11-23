@@ -2,10 +2,8 @@ package org.joinmastodon.android.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -13,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,15 +20,12 @@ import org.joinmastodon.android.R;
 import org.joinmastodon.android.api.requests.oauth.RevokeOauthToken;
 import org.joinmastodon.android.api.session.AccountSession;
 import org.joinmastodon.android.api.session.AccountSessionManager;
-import org.joinmastodon.android.fragments.HomeTimelineFragment;
-import org.joinmastodon.android.fragments.PublicTimelineFragment;
 import org.joinmastodon.android.ui.utils.UiUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.grishka.appkit.Nav;
 import me.grishka.appkit.api.Callback;
 import me.grishka.appkit.api.ErrorResponse;
 import me.grishka.appkit.utils.BindableViewHolder;
@@ -41,16 +37,16 @@ import me.grishka.appkit.views.UsableRecyclerView;
 
 public class TimelineSwitcherSheet extends BottomSheet{
 	private final Activity activity;
-	private final String accountID;
 	private UsableRecyclerView list;
-	private List<WrappedTimelineType> timelineTypes;
+	private List<TimelineType> timelineTypes;
+	private TimelineSwitcherListener listener;
 
-	public TimelineSwitcherSheet(@NonNull Activity activity, String accountID){
+	public TimelineSwitcherSheet(@NonNull Activity activity, TimelineSwitcherListener listener){
 		super(activity);
 		this.activity=activity;
-		this.accountID = accountID;
+		this.listener = listener;
 
-		timelineTypes = Arrays.stream(WrappedTimelineType.values()).collect(Collectors.toList());
+		timelineTypes = Arrays.stream(TimelineType.values()).collect(Collectors.toList());
 
 		list=new UsableRecyclerView(activity);
 		list.setClipToPadding(false);
@@ -60,7 +56,7 @@ public class TimelineSwitcherSheet extends BottomSheet{
 		View handle=new View(activity);
 		handle.setBackgroundResource(R.drawable.bg_bottom_sheet_handle);
 		adapter.addAdapter(new SingleViewRecyclerAdapter(handle));
-		adapter.addAdapter(new TimelinesAdapter());
+		adapter.addAdapter(new TimelinesAdapter(listener));
 
 		list.setAdapter(adapter);
 		DividerItemDecoration divider=new DividerItemDecoration(activity, R.attr.colorPollVoted, .5f, 72, 16, DividerItemDecoration.NOT_FIRST);
@@ -122,11 +118,16 @@ public class TimelineSwitcherSheet extends BottomSheet{
 	}
 
 	private class TimelinesAdapter extends RecyclerView.Adapter<TimelineTypeViewHolder> {
+		private TimelineSwitcherListener listener;
+
+		public TimelinesAdapter(TimelineSwitcherListener listener) {
+			this.listener = listener;
+		}
 
 		@NonNull
 		@Override
 		public TimelineTypeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
-			return new TimelineTypeViewHolder();
+			return new TimelineTypeViewHolder(listener);
 		}
 
 		@Override
@@ -140,44 +141,46 @@ public class TimelineSwitcherSheet extends BottomSheet{
 		}
 	}
 
-	private class TimelineTypeViewHolder extends BindableViewHolder<WrappedTimelineType> implements UsableRecyclerView.Clickable{
+	private class TimelineTypeViewHolder extends BindableViewHolder<TimelineType> implements UsableRecyclerView.Clickable{
 		private final TextView name;
-		private final ImageView avatar;
+		private final ImageView icon;
 
-		public TimelineTypeViewHolder(){
+		public TimelineTypeViewHolder(TimelineSwitcherListener listener){
 			super(activity, R.layout.item_timeline_switcher, list);
 			name=findViewById(R.id.name);
-			avatar=findViewById(R.id.avatar);
-
-//			avatar.setOutlineProvider(OutlineProviders.roundedRect(12));
-//			avatar.setClipToOutline(true);
-
+			icon =findViewById(R.id.avatar);
 		}
 
 		@SuppressLint("SetTextI18n")
 		@Override
-		public void onBind(WrappedTimelineType item){
+		public void onBind(TimelineType item){
 			name.setText(item.name);
+			icon.setImageDrawable(activity.getResources().getDrawable(item.icon, activity.getTheme()));
 		}
 
 		@Override
 		public void onClick(){
-			Class<? extends Fragment> type;
-			if(this.item == WrappedTimelineType.PUBLIC) type = PublicTimelineFragment.class;
-			else type = HomeTimelineFragment.class;
-			Bundle extras = new Bundle();
-			extras.putString("account", accountID);
-			extras.putBoolean("_can_go_back", false);
-			Nav.goClearingStack(activity, type, extras);
+			TimelineType type;
+			if(this.item == TimelineType.PUBLIC) type = TimelineType.PUBLIC;
+			else type = TimelineType.HOME;
+			listener.onSwitch(type);
 			dismiss();
 		}
 	}
 
-	private enum WrappedTimelineType {
-		HOME("Home"), PUBLIC("Public");
+	public enum TimelineType {
+		HOME("Home", R.drawable.ic_baseline_home_24),
+		PUBLIC("Public", R.drawable.ic_baseline_public_24);
 		private String name;
-		WrappedTimelineType(String name) {
+		@DrawableRes private int icon;
+		TimelineType(String name, @DrawableRes int icon) {
 			this.name = name;
+			this.icon = icon;
 		}
 	}
+
+	public interface TimelineSwitcherListener {
+		void onSwitch(TimelineType type);
+	}
+
 }
