@@ -200,6 +200,79 @@ public class CacheController{
 		});
 	}
 
+	public void getLocalTimeline(String maxID, int count, boolean forceReload, Callback<CacheablePaginatedResponse<List<Status>>> callback){
+		cancelDelayedClose();
+		databaseThread.postRunnable(()->{
+			try{
+				List<Filter> filters=AccountSessionManager.getInstance().getAccount(accountID).wordFilters.stream().filter(f->f.context.contains(Filter.FilterContext.HOME)).collect(Collectors.toList());
+				if(!forceReload){
+					SQLiteDatabase db=getOrOpenDatabase();
+					try(Cursor cursor=db.query("local_timeline", new String[]{"json", "flags"}, maxID==null ? null : "`id`<?", maxID==null ? null : new String[]{maxID}, null, null, "`id` DESC", count+"")){
+						if(cursor.getCount()==count){
+							ArrayList<Status> result=new ArrayList<>();
+							cursor.moveToFirst();
+							String newMaxID;
+							outer:
+							do{
+								Status status=MastodonAPIController.gson.fromJson(cursor.getString(0), Status.class);
+								status.postprocess();
+								int flags=cursor.getInt(1);
+								status.hasGapAfter=((flags & POST_FLAG_GAP_AFTER)!=0);
+								newMaxID=status.id;
+								for(Filter filter:filters){
+									if(filter.matches(status.getContentStatus().content))
+										continue outer;
+								}
+								result.add(status);
+							}while(cursor.moveToNext());
+							String _newMaxID=newMaxID;
+							uiHandler.post(()->callback.onSuccess(new CacheablePaginatedResponse<>(result, _newMaxID, true)));
+							return;
+						}
+					}catch(IOException x){
+						Log.w(TAG, "getLocalTimeline: corrupted status object in database", x);
+					}
+				}
+				new GetPublicTimeline(true, false, maxID, null, count)
+						.setCallback(new Callback<>(){
+							@Override
+							public void onSuccess(List<Status> result){
+								callback.onSuccess(new CacheablePaginatedResponse<>(result.stream().filter(new StatusFilterPredicate(filters)).collect(Collectors.toList()), result.isEmpty() ? null : result.get(result.size()-1).id, false));
+								putLocalTimeline(result, maxID==null);
+							}
+
+							@Override
+							public void onError(ErrorResponse error){
+								callback.onError(error);
+							}
+						})
+						.exec(accountID);
+			}catch(SQLiteException x){
+				Log.w(TAG, x);
+				uiHandler.post(()->callback.onError(new MastodonErrorResponse(x.getLocalizedMessage(), 500)));
+			}finally{
+				closeDelayed();
+			}
+		}, 0);
+	}
+
+	public void putLocalTimeline(List<Status> posts, boolean clear){
+		runOnDbThread((db)->{
+			if(clear)
+				db.delete("local_timeline", null, null);
+			ContentValues values=new ContentValues(3);
+			for(Status s:posts){
+				values.put("id", s.id);
+				values.put("json", MastodonAPIController.gson.toJson(s));
+				int flags=0;
+				if(s.hasGapAfter)
+					flags|=POST_FLAG_GAP_AFTER;
+				values.put("flags", flags);
+				db.insertWithOnConflict("local_timeline", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			}
+		});
+	}
+
 	public void getNotifications(String maxID, int count, boolean onlyMentions, boolean forceReload, Callback<PaginatedResponse<List<Notification>>> callback){
 		cancelDelayedClose();
 		databaseThread.postRunnable(()->{
@@ -311,6 +384,7 @@ public class CacheController{
 		runOnDbThread((db)->{
 			db.delete("home_timeline", "`id`=?", new String[]{id});
 			db.delete("public_timeline", "`id`=?", new String[]{id});
+			db.delete("local_timeline", "`id`=?", new String[]{id});
 		});
 	}
 
@@ -379,6 +453,12 @@ public class CacheController{
 						)""");
 			db.execSQL("""
 						CREATE TABLE `public_timeline` (
+							`id` VARCHAR(25) NOT NULL PRIMARY KEY,
+							`json` TEXT NOT NULL,
+							`flags` INTEGER NOT NULL DEFAULT 0
+						)""");
+			db.execSQL("""
+						CREATE TABLE `local_timeline` (
 							`id` VARCHAR(25) NOT NULL PRIMARY KEY,
 							`json` TEXT NOT NULL,
 							`flags` INTEGER NOT NULL DEFAULT 0
