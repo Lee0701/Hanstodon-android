@@ -267,10 +267,10 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		switchFragment(fragment);
 		currentTab=R.id.tab_timeline;
 		ImageView homeIcon = (ImageView) tabBar.findViewById(R.id.tab_home_ico);
-		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) {
-			homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
-		} else {
+		if(type == TimelineSwitcherSheet.TimelineType.HOME) {
 			homeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_fluent_home_28_filled, getActivity().getTheme()));
+		} else {
+			homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
 		}
 		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
 	}
