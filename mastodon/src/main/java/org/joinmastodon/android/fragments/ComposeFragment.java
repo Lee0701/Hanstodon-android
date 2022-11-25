@@ -1033,7 +1033,8 @@ public class ComposeFragment extends MastodonToolbarFragment implements OnBackPr
 		UiUtils.enablePopupMenuIcons(getActivity(), menu);
 		m.setGroupCheckable(0, true, true);
 		m.findItem(switch(statusVisibility){
-			case PUBLIC, UNLISTED -> R.id.vis_public;
+			case PUBLIC -> R.id.vis_public;
+			case UNLISTED -> R.id.vis_unlisted;
 			case PRIVATE -> R.id.vis_followers;
 			case DIRECT -> R.id.vis_private;
 		}).setChecked(true);
@@ -1041,8 +1042,10 @@ public class ComposeFragment extends MastodonToolbarFragment implements OnBackPr
 			@Override
 			public boolean onMenuItemClick(MenuItem item){
 				int id=item.getItemId();
-				if(id==R.id.vis_public){
-					statusVisibility=StatusPrivacy.PUBLIC;
+				if(id==R.id.vis_public) {
+					statusVisibility = StatusPrivacy.PUBLIC;
+				} else if(id == R.id.vis_unlisted) {
+					statusVisibility = StatusPrivacy.UNLISTED;
 				}else if(id==R.id.vis_followers){
 					statusVisibility=StatusPrivacy.PRIVATE;
 				}else if(id==R.id.vis_private){
@@ -1062,7 +1065,7 @@ public class ComposeFragment extends MastodonToolbarFragment implements OnBackPr
 		}
 		visibilityBtn.setImageResource(switch(statusVisibility){
 			case PUBLIC -> R.drawable.ic_fluent_earth_24_filled;
-			case UNLISTED -> R.drawable.ic_fluent_people_community_24_regular;
+			case UNLISTED -> R.drawable.ic_baseline_lock_open_24;
 			case PRIVATE -> R.drawable.ic_fluent_people_checkmark_24_regular;
 			case DIRECT -> R.drawable.ic_at_symbol;
 		});
