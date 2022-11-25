@@ -10,7 +10,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<org.joinmastodon.android.ui.views.NestedRecyclerScrollView
+		<io.github.lee0701.mastodon.android.ui.views.NestedRecyclerScrollView
 			android:id="@+id/scroller"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
@@ -25,7 +25,7 @@
 					android:paddingBottom="15dp"
 					android:clipToPadding="false">
 
-					<org.joinmastodon.android.ui.views.CoverImageView
+					<io.github.lee0701.mastodon.android.ui.views.CoverImageView
 						android:id="@+id/cover"
 						android:layout_width="match_parent"
 						android:layout_height="229dp"
@@ -174,7 +174,7 @@
 						android:layout_below="@id/profile_counters"
 						android:padding="16dp"
 						android:clipToPadding="false">
-						<org.joinmastodon.android.ui.views.ProgressBarButton
+						<io.github.lee0701.mastodon.android.ui.views.ProgressBarButton
 							android:id="@+id/profile_action_btn"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
@@ -216,7 +216,7 @@
 						android:textColor="?android:textColorSecondary"
 						tools:text="\@Gargron"/>
 
-					<org.joinmastodon.android.ui.views.LinkedTextView
+					<io.github.lee0701.mastodon.android.ui.views.LinkedTextView
 						android:id="@+id/bio"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
@@ -262,7 +262,7 @@
 						tools:text="Founder, CEO and lead developer @Mastodon, Germany." />
 
 				</RelativeLayout>
-				<org.joinmastodon.android.ui.tabs.TabLayout
+				<io.github.lee0701.mastodon.android.ui.tabs.TabLayout
 					android:id="@+id/tabbar"
 					android:layout_width="match_parent"
 					android:layout_height="38dp"
@@ -281,7 +281,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"/>
 			</LinearLayout>
-		</org.joinmastodon.android.ui.views.NestedRecyclerScrollView>
+		</io.github.lee0701.mastodon.android.ui.views.NestedRecyclerScrollView>
 
 		<ImageButton
 			android:id="@+id/fab"

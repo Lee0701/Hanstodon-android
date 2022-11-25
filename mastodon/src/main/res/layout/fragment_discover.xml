@@ -86,7 +86,7 @@
 
 	</FrameLayout>
 
-	<org.joinmastodon.android.ui.tabs.TabLayout
+	<io.github.lee0701.mastodon.android.ui.tabs.TabLayout
 		android:id="@+id/tabbar"
 		android:layout_width="match_parent"
 		android:layout_height="48dp"

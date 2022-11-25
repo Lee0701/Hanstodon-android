@@ -21,12 +21,12 @@
 #-renamesourcefileattribute SourceFile
 
 # Keep all model classes as they're used with gson and their names are shown in errors
--keep public class org.joinmastodon.android.model.**{
+-keep public class io.github.lee0701.mastodon.android.model.**{
 	<fields>;
 }
 
 # Inner classes in api requests are used with gson
--keepclassmembers class org.joinmastodon.android.api.**$*{
+-keepclassmembers class io.github.lee0701.mastodon.android.api.**$*{
 	*;
 }
 
@@ -44,6 +44,6 @@
 	*;
 }
 
--keep class org.joinmastodon.android.AppCenterWrapper { *; }
+-keep class io.github.lee0701.mastodon.android.AppCenterWrapper { *; }
 
 -keepattributes LineNumberTable

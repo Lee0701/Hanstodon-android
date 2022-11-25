@@ -164,7 +164,7 @@
 			android:padding="8dp"
 			android:layout_marginEnd="8dp"
 			android:clipToPadding="false">
-			<org.joinmastodon.android.ui.views.ProgressBarButton
+			<io.github.lee0701.mastodon.android.ui.views.ProgressBarButton
 				android:id="@+id/action_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

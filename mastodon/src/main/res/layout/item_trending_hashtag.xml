@@ -7,7 +7,7 @@
 	android:paddingRight="16dp"
 	android:paddingTop="12dp">
 
-	<org.joinmastodon.android.ui.views.HashtagChartView
+	<io.github.lee0701.mastodon.android.ui.views.HashtagChartView
 		android:id="@+id/chart"
 		android:layout_width="64dp"
 		android:layout_height="32dp"

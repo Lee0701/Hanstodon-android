@@ -9,7 +9,7 @@
 		android:layout_height="wrap_content"
 		android:orientation="vertical">
 
-		<org.joinmastodon.android.ui.views.ComposeMediaLayout
+		<io.github.lee0701.mastodon.android.ui.views.ComposeMediaLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal">
@@ -22,7 +22,7 @@
 				android:importantForAccessibility="no"
 				tools:src="#0f0"/>
 
-		</org.joinmastodon.android.ui.views.ComposeMediaLayout>
+		</io.github.lee0701.mastodon.android.ui.views.ComposeMediaLayout>
 
 		<TextView
 			android:id="@+id/title"
