@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">漢스토돈</string>
-	
+    <string name="app_name">漢스토돈</string>
     <string name="get_started">始作하기</string>
     <string name="log_in">로그인</string>
     <string name="next">다음</string>
@@ -287,7 +286,7 @@
     <string name="file_saved">파일 貯藏됨</string>
     <string name="downloading">다운로드中…</string>
     <string name="no_app_to_handle_action">이 動作을 處理할 앱이 없습니다</string>
-    <string name="local_timeline">커뮤니티</string>
+    <string name="local_timeline">로컬 타임라인</string>
     <string name="trending_posts_info_banner">當身이 屬한 마스토돈 서버에서 關心을 끌고 있는 揭示物들입니다.</string>
     <string name="trending_hashtags_info_banner">當身이 屬한 마스토돈 서버에서 關心을 끌고 있는 해시태그들입니다.</string>
     <string name="trending_links_info_banner">當身이 屬한 마스토돈 서버에서 가장 많이 共有되고 있는 消息들입니다.</string>
@@ -316,4 +315,6 @@
     </plurals>
     <string name="timestamp_via_app">%1$s에 %2$s에서</string>
     <string name="time_now">方今</string>
+    <string name="visibility_unlisted">타임라인에 非表示</string>
+    <string name="public_timeline">公開 타임라인</string>
 </resources>
