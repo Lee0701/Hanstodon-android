@@ -124,6 +124,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			getChildFragmentManager().beginTransaction()
 					.add(R.id.fragment_wrap, homeTimelineFragment)
 					.add(R.id.fragment_wrap, publicTimelineFragment).hide(publicTimelineFragment)
+					.add(R.id.fragment_wrap, localTimelineFragment).hide(localTimelineFragment)
 					.add(R.id.fragment_wrap, searchFragment).hide(searchFragment)
 					.add(R.id.fragment_wrap, notificationsFragment).hide(notificationsFragment)
 					.add(R.id.fragment_wrap, profileFragment).hide(profileFragment)
@@ -317,6 +318,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		outState.putInt("selectedTab", currentTab);
 		getChildFragmentManager().putFragment(outState, "homeTimelineFragment", homeTimelineFragment);
 		getChildFragmentManager().putFragment(outState, "publicTimelineFragment", publicTimelineFragment);
+		getChildFragmentManager().putFragment(outState, "localTimelineFragment", localTimelineFragment);
 		getChildFragmentManager().putFragment(outState, "searchFragment", searchFragment);
 		getChildFragmentManager().putFragment(outState, "notificationsFragment", notificationsFragment);
 		getChildFragmentManager().putFragment(outState, "profileFragment", profileFragment);
