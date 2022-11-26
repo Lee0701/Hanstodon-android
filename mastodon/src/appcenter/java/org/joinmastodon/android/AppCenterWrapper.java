@@ -1,4 +1,4 @@
-package org.joinmastodon.android;
+package io.github.lee0701.mastodon.android;
 
 import android.app.Application;
 import android.util.Log;

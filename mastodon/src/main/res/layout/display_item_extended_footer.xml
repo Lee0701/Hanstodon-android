@@ -7,7 +7,7 @@
 	android:layout_height="wrap_content"
 	android:background="?colorBackgroundLightest">
 
-	<org.joinmastodon.android.ui.views.AutoOrientationLinearLayout
+	<io.github.lee0701.mastodon.android.ui.views.AutoOrientationLinearLayout
 		android:id="@+id/button_bar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
@@ -38,7 +38,7 @@
 			android:fontFamily="sans-serif"
 			tools:text="12 favorites"/>
 
-	</org.joinmastodon.android.ui.views.AutoOrientationLinearLayout>
+	</io.github.lee0701.mastodon.android.ui.views.AutoOrientationLinearLayout>
 
 	<TextView
 		android:id="@+id/timestamp"

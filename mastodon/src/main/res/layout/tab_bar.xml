@@ -8,7 +8,7 @@
 	android:outlineProvider="bounds"
 	android:clipChildren="false">
 
-	<org.joinmastodon.android.ui.views.TabBar
+	<io.github.lee0701.mastodon.android.ui.views.TabBar
 		android:id="@+id/tabbar"
 		android:layout_width="match_parent"
 		android:layout_height="52dp"
@@ -95,6 +95,6 @@
 				android:backgroundTint="?android:colorPrimary"
 				android:background="@drawable/ic_fluent_chevron_up_down_16_regular"/>
 		</FrameLayout>
-	</org.joinmastodon.android.ui.views.TabBar>
+	</io.github.lee0701.mastodon.android.ui.views.TabBar>
 
 </FrameLayout>

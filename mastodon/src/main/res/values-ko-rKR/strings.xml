@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="app_name">漢스토돈</string>
+	
     <string name="get_started">始作하기</string>
     <string name="log_in">로그인</string>
     <string name="next">다음</string>

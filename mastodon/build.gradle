@@ -6,7 +6,7 @@ plugins {
 android {
 	compileSdk 33
 	defaultConfig {
-		applicationId "org.joinmastodon.android"
+		applicationId "io.github.lee0701.mastodon.android"
 		minSdk 23
 		targetSdk 33
 		versionCode 39

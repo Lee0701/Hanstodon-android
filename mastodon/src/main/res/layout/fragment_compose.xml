@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.joinmastodon.android.ui.views.SizeListenerLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<io.github.lee0701.mastodon.android.ui.views.SizeListenerLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
@@ -89,7 +89,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginTop="10dp">
 
-				<org.joinmastodon.android.ui.views.ComposeEditText
+				<io.github.lee0701.mastodon.android.ui.views.ComposeEditText
 					android:id="@+id/toot_text"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
 				android:orientation="vertical"
 				android:visibility="gone"
 				tools:visibility="visible">
-				<org.joinmastodon.android.ui.views.ReorderableLinearLayout
+				<io.github.lee0701.mastodon.android.ui.views.ReorderableLinearLayout
 					android:id="@+id/poll_options"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
 					tools:text="Duration: 7 days"/>
 			</LinearLayout>
 
-			<org.joinmastodon.android.ui.views.ComposeMediaLayout
+			<io.github.lee0701.mastodon.android.ui.views.ComposeMediaLayout
 				android:id="@+id/attachments"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -244,4 +244,4 @@
 
 	</LinearLayout>
 
-</org.joinmastodon.android.ui.views.SizeListenerLinearLayout>
+</io.github.lee0701.mastodon.android.ui.views.SizeListenerLinearLayout>
