@@ -45,6 +45,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 	private FragmentRootLinearLayout content;
 	private HomeTimelineFragment homeTimelineFragment;
 	private PublicTimelineFragment publicTimelineFragment;
+	private LocalTimelineFragment localTimelineFragment;
 	private NotificationsFragment notificationsFragment;
 	private DiscoverFragment searchFragment;
 	private ProfileFragment profileFragment;
@@ -74,6 +75,9 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			args=new Bundle(args);
 			publicTimelineFragment=new PublicTimelineFragment();
 			publicTimelineFragment.setArguments(args);
+			args=new Bundle(args);
+			localTimelineFragment=new LocalTimelineFragment();
+			localTimelineFragment.setArguments(args);
 			args=new Bundle(args);
 			args.putBoolean("noAutoLoad", true);
 			searchFragment=new DiscoverFragment();
@@ -120,6 +124,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			getChildFragmentManager().beginTransaction()
 					.add(R.id.fragment_wrap, homeTimelineFragment)
 					.add(R.id.fragment_wrap, publicTimelineFragment).hide(publicTimelineFragment)
+					.add(R.id.fragment_wrap, localTimelineFragment).hide(localTimelineFragment)
 					.add(R.id.fragment_wrap, searchFragment).hide(searchFragment)
 					.add(R.id.fragment_wrap, notificationsFragment).hide(notificationsFragment)
 					.add(R.id.fragment_wrap, profileFragment).hide(profileFragment)
@@ -150,6 +155,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 			return;
 		homeTimelineFragment=(HomeTimelineFragment) getChildFragmentManager().getFragment(savedInstanceState, "homeTimelineFragment");
 		publicTimelineFragment=(PublicTimelineFragment) getChildFragmentManager().getFragment(savedInstanceState, "publicTimelineFragment");
+		localTimelineFragment=(LocalTimelineFragment) getChildFragmentManager().getFragment(savedInstanceState, "localTimelineFragment");
 		searchFragment=(DiscoverFragment) getChildFragmentManager().getFragment(savedInstanceState, "searchFragment");
 		notificationsFragment=(NotificationsFragment) getChildFragmentManager().getFragment(savedInstanceState, "notificationsFragment");
 		profileFragment=(ProfileFragment) getChildFragmentManager().getFragment(savedInstanceState, "profileFragment");
@@ -158,6 +164,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		getChildFragmentManager().beginTransaction()
 				.hide(homeTimelineFragment)
 				.hide(publicTimelineFragment)
+				.hide(localTimelineFragment)
 				.hide(searchFragment)
 				.hide(notificationsFragment)
 				.hide(profileFragment)
@@ -194,6 +201,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		WindowInsets topOnlyInsets=insets.replaceSystemWindowInsets(0, insets.getSystemWindowInsetTop(), 0, 0);
 		homeTimelineFragment.onApplyWindowInsets(topOnlyInsets);
 		publicTimelineFragment.onApplyWindowInsets(topOnlyInsets);
+		localTimelineFragment.onApplyWindowInsets(topOnlyInsets);
 		searchFragment.onApplyWindowInsets(topOnlyInsets);
 		notificationsFragment.onApplyWindowInsets(topOnlyInsets);
 		profileFragment.onApplyWindowInsets(topOnlyInsets);
@@ -202,6 +210,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 	private Fragment fragmentFor(@IdRes int tab, TimelineSwitcherSheet.TimelineType type){
 		if(tab==R.id.tab_timeline){
 			if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) return publicTimelineFragment;
+			if(type == TimelineSwitcherSheet.TimelineType.LOCAL) return localTimelineFragment;
 			else return homeTimelineFragment;
 		}else if(tab==R.id.tab_search){
 			return searchFragment;
@@ -234,6 +243,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		getChildFragmentManager().beginTransaction()
 				.hide(homeTimelineFragment)
 				.hide(publicTimelineFragment)
+				.hide(localTimelineFragment)
 				.hide(searchFragment)
 				.hide(notificationsFragment)
 				.hide(profileFragment)
@@ -247,6 +257,8 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		Fragment fragment;
 		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) {
 			fragment = publicTimelineFragment;
+		} else if(type == TimelineSwitcherSheet.TimelineType.LOCAL) {
+			fragment = localTimelineFragment;
 		} else {
 			fragment = homeTimelineFragment;
 		}
@@ -255,10 +267,10 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		switchFragment(fragment);
 		currentTab=R.id.tab_timeline;
 		ImageView homeIcon = (ImageView) tabBar.findViewById(R.id.tab_home_ico);
-		if(type == TimelineSwitcherSheet.TimelineType.PUBLIC) {
-			homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
-		} else {
+		if(type == TimelineSwitcherSheet.TimelineType.HOME) {
 			homeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_fluent_home_28_filled, getActivity().getTheme()));
+		} else {
+			homeIcon.setImageDrawable(getResources().getDrawable(type.getIcon(), getActivity().getTheme()));
 		}
 		((FragmentStackActivity)getActivity()).invalidateSystemBarColors(this);
 	}
@@ -306,6 +318,7 @@ public class HomeFragment extends AppKitFragment implements OnBackPressedListene
 		outState.putInt("selectedTab", currentTab);
 		getChildFragmentManager().putFragment(outState, "homeTimelineFragment", homeTimelineFragment);
 		getChildFragmentManager().putFragment(outState, "publicTimelineFragment", publicTimelineFragment);
+		getChildFragmentManager().putFragment(outState, "localTimelineFragment", localTimelineFragment);
 		getChildFragmentManager().putFragment(outState, "searchFragment", searchFragment);
 		getChildFragmentManager().putFragment(outState, "notificationsFragment", notificationsFragment);
 		getChildFragmentManager().putFragment(outState, "profileFragment", profileFragment);

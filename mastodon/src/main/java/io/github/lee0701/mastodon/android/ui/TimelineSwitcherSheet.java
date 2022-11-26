@@ -121,6 +121,7 @@ public class TimelineSwitcherSheet extends BottomSheet{
 		public void onClick(){
 			TimelineType type;
 			if(this.item == TimelineType.PUBLIC) type = TimelineType.PUBLIC;
+			else if(this.item == TimelineType.LOCAL) type = TimelineType.LOCAL;
 			else type = TimelineType.HOME;
 			listener.onSwitch(type);
 			dismiss();
@@ -129,6 +130,7 @@ public class TimelineSwitcherSheet extends BottomSheet{
 
 	public enum TimelineType {
 		HOME(R.string.home_timeline, R.drawable.ic_fluent_home_28_filled),
+		LOCAL(R.string.local_timeline, R.drawable.ic_baseline_groups_24),
 		PUBLIC(R.string.public_timeline, R.drawable.ic_baseline_public_24);
 		@StringRes private final int name;
 		@DrawableRes private final int icon;
