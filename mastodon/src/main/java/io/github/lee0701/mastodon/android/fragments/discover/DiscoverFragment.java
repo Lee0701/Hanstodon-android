@@ -72,15 +72,14 @@ public class DiscoverFragment extends AppKitFragment implements ScrollableToTop,
 		tabLayout=view.findViewById(R.id.tabbar);
 		pager=view.findViewById(R.id.pager);
 
-		tabViews=new FrameLayout[5];
+		tabViews=new FrameLayout[4];
 		for(int i=0;i<tabViews.length;i++){
 			FrameLayout tabView=new FrameLayout(getActivity());
 			tabView.setId(switch(i){
 				case 0 -> R.id.discover_posts;
 				case 1 -> R.id.discover_hashtags;
 				case 2 -> R.id.discover_news;
-				case 3 -> R.id.discover_local_timeline;
-				case 4 -> R.id.discover_users;
+				case 3 -> R.id.discover_users;
 				default -> throw new IllegalStateException("Unexpected value: "+i);
 			});
 			tabView.setVisibility(View.GONE);
@@ -128,7 +127,6 @@ public class DiscoverFragment extends AppKitFragment implements ScrollableToTop,
 
 			getChildFragmentManager().beginTransaction()
 					.add(R.id.discover_posts, postsFragment)
-					.add(R.id.discover_local_timeline, localTimelineFragment)
 					.add(R.id.discover_hashtags, hashtagsFragment)
 					.add(R.id.discover_news, newsFragment)
 					.add(R.id.discover_users, accountsFragment)
@@ -142,8 +140,7 @@ public class DiscoverFragment extends AppKitFragment implements ScrollableToTop,
 					case 0 -> R.string.posts;
 					case 1 -> R.string.hashtags;
 					case 2 -> R.string.news;
-					case 3 -> R.string.local_timeline;
-					case 4 -> R.string.for_you;
+					case 3 -> R.string.for_you;
 					default -> throw new IllegalStateException("Unexpected value: "+position);
 				});
 				tab.view.textView.setAllCaps(true);
@@ -269,8 +266,7 @@ public class DiscoverFragment extends AppKitFragment implements ScrollableToTop,
 			case 0 -> postsFragment;
 			case 1 -> hashtagsFragment;
 			case 2 -> newsFragment;
-			case 3 -> localTimelineFragment;
-			case 4 -> accountsFragment;
+			case 3 -> accountsFragment;
 			default -> throw new IllegalStateException("Unexpected value: "+page);
 		};
 	}
